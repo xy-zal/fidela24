@@ -50,6 +50,10 @@ img{ -webkit-user-drag:none; user-select:none; }
 /* ==============================================================
    BACKGROUND CANVASES
 ============================================================== */
+#stars-canvas{
+  position:fixed; inset:0; width:100%; height:100%;
+  z-index:0; pointer-events:none;
+}
 #fireworks-canvas{
   position:fixed; inset:0; width:100%; height:100%;
   z-index:0; pointer-events:none;
@@ -60,6 +64,9 @@ img{ -webkit-user-drag:none; user-select:none; }
 }
 
 #main-content{ position:relative; z-index:1; }
+
+.section-header{ margin-bottom: clamp(28px, 6vw, 46px); }
+.section-header .section-title{ margin-bottom:0; }
 
 /* ==============================================================
    CUSTOM CURSOR + TRAIL (desktop only)
@@ -220,14 +227,60 @@ section{ padding: clamp(56px, 12vw, 90px) 20px; position:relative; }
    STORIES RAIL (IG style)
 ============================================================== */
 #stories-section{ text-align:center; }
+.story-rail-wrap{
+  position:relative;
+  max-width: 720px; margin:0 auto;
+}
+.story-rail-wrap::before,
+.story-rail-wrap::after{
+  content:""; position:absolute; top:0; bottom:20px; width:36px;
+  z-index:2; pointer-events:none;
+}
+.story-rail-wrap::before{
+  left:0;
+  background: linear-gradient(90deg, var(--night-1), transparent);
+  opacity:1; transition: opacity .25s ease;
+}
+.story-rail-wrap::after{
+  right:0;
+  background: linear-gradient(270deg, var(--night-1), transparent);
+  opacity:1; transition: opacity .25s ease;
+}
+.story-rail-wrap.at-start::before{ opacity:0; }
+.story-rail-wrap.at-end::after{ opacity:0; }
+.story-scroll-hint{
+  font-size:.72rem; color: var(--cream-dim); opacity:.7;
+  margin-top:4px; letter-spacing:.03em;
+}
+.story-counter{
+  position:absolute; z-index:6;
+  top: calc(20px + env(safe-area-inset-top));
+  left:50%; transform:translateX(-50%);
+  font-family: var(--numeral); font-size:.78rem;
+  color: rgba(247,241,227,.75);
+  letter-spacing:.05em;
+  pointer-events:none;
+}
+
+/* ==============================================================
+   REVEAL-ON-SCROLL (generic fade-in utility)
+============================================================== */
+.reveal-fade{
+  opacity:0; transform: translateY(18px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.reveal-fade.in-view{ opacity:1; transform:none; }
 .story-rail{
   display:flex; gap:18px; overflow-x:auto;
   padding: 10px 16px 20px;
-  max-width: 720px; margin:0 auto;
+  margin:0 auto;
   scrollbar-width:none;
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
+  cursor: grab;
+  user-select: none;
 }
+.story-rail.dragging{ cursor: grabbing; scroll-snap-type: none; }
 .story-rail::-webkit-scrollbar{ display:none; }
 .story-thumb{
   flex: 0 0 auto;
@@ -310,22 +363,76 @@ section{ padding: clamp(56px, 12vw, 90px) 20px; position:relative; }
 ============================================================== */
 #reveal-section{
   min-height: 100svh;
-  display:flex; align-items:center; justify-content:center;
+  display:flex; 
+  flex-direction: column; /* PERBAIKAN: Elemen ditata vertikal ke bawah, tidak menyempil lagi */
+  align-items:center; 
+  justify-content:center;
   text-align:center;
+  position: relative;
 }
 .reveal-locked{
-  display:flex; flex-direction:column; align-items:center; gap:14px;
+  display:flex; 
+  flex-direction:column; 
+  align-items:center; 
+  gap:16px;
   color: var(--cream-dim);
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
 }
-.reveal-lock-icon{ font-size:2.2rem; opacity:.7; }
-.reveal-lock-text{ font-size:.85rem; letter-spacing:.04em; line-height:1.6; }
+.reveal-lock-icon{ 
+  font-size:2.4rem; 
+  opacity:.8;
+  animation: lockPulse 2.2s infinite ease-in-out; /* Animasi gembok berdenyut lembut */
+}
+.reveal-lock-text{ 
+  font-size:.85rem; 
+  letter-spacing:.06em; 
+  line-height:1.6; 
+}
+
+/* PERBAIKAN: Style Progress Bar Elegan Bertema Gold */
+.reveal-progress-bar {
+  width: 80%;
+  height: 4px;
+  background: rgba(247, 241, 227, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  margin-top: 4px;
+}
+.reveal-progress-fill {
+  position: absolute;
+  top: 0;
+  left: -50%;
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, var(--gold-soft), transparent);
+  animation: progressScan 1.6s infinite linear; /* Efek memindai/loading berjalan tanpa henti */
+}
+
+/* Keyframes untuk Animasi Tambahan */
+@keyframes lockPulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.08); opacity: 0.95; filter: drop-shadow(0 0 8px var(--gold)); }
+}
+@keyframes progressScan {
+  0% { left: -40%; }
+  100% { left: 100%; }
+}
 
 .reveal-content{
   max-width:640px;
   opacity:0; transform: translateY(30px) scale(.98);
   transition: opacity 1.1s ease, transform 1.1s ease;
+  position: absolute; /* Mencegah bentrokan tata letak saat konten utama disembunyikan */
+  pointer-events: none;
 }
-.reveal-content.visible{ opacity:1; transform:translateY(0) scale(1); }
+.reveal-content.visible{ 
+  opacity:1; transform:translateY(0) scale(1); 
+  position: relative;
+  pointer-events: auto;
+}
 .reveal-title{
   font-size: clamp(2rem, 6vw, 3.2rem);
   color: var(--gold-soft);
@@ -367,6 +474,8 @@ section{ padding: clamp(56px, 12vw, 90px) 20px; position:relative; }
   html{ scroll-behavior:auto; }
   .scroll-line{ animation:none; }
   .reveal-content{ transition:none; }
+  .reveal-fade{ transition:none; opacity:1; transform:none; }
+  .reveal-lock-icon, .reveal-progress-fill { animation: none; }
 }
 
 /* ==============================================================

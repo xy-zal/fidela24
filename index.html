@@ -7,7 +7,6 @@
 <meta name="description" content="Untuk Fidela, di usia 24.">
 <meta name="theme-color" content="#0a0d29">
 
-<!-- Open Graph: biar preview bagus kalau link dibagikan -->
 <meta property="og:title" content="Selamat Ulang Tahun, Fidela!">
 <meta property="og:description" content="Sebuah kado kecil untuk usia 24.">
 <meta property="og:type" content="website">
@@ -20,27 +19,21 @@
 </head>
 <body>
 
-<!-- ============================================================
-     GIFT BOX / SCRATCH CARD OVERLAY
-     Ini yang pertama dilihat pengunjung. Setelah digosok, halaman
-     utama muncul dan musik mulai diputar (trigger interaksi pertama).
-============================================================= -->
 <div id="gift-overlay">
   <div class="gift-stage">
-    <p class="gift-eyebrow">sebuah kado kecil, untuk</p>
+    <p class="gift-eyebrow">sebuah kado kecil, untuk kamu</p>
     <h1 class="gift-name">Fidela</h1>
     <div class="scratch-wrap">
       <canvas id="scratch-canvas" width="320" height="320"></canvas>
       <div class="scratch-hint">
         <span class="scratch-icon">🎁</span>
-        <span>gosok kotaknya</span>
+        <span>gosok pelan-pelan di sini</span>
       </div>
     </div>
-    <p class="gift-progress-label">disegel rapat...</p>
+    <p class="gift-progress-label">masih disegel rapat...</p>
   </div>
 </div>
 
-<!-- Tombol mute, selalu terlihat -->
 <button id="mute-btn" class="floating-btn" aria-label="Mute atau unmute musik">
   <span id="mute-icon">🔊</span>
 </button>
@@ -48,46 +41,45 @@
   <source src="assets/audio/backsound.mp3" type="audio/mpeg">
 </audio>
 
-<!-- Canvas kembang api global, menutupi seluruh viewport, di belakang konten -->
+<canvas id="stars-canvas"></canvas>
+
 <canvas id="fireworks-canvas"></canvas>
 
-<!-- Canvas confetti, di atas segalanya saat aktif -->
 <canvas id="confetti-canvas"></canvas>
 
 <main id="main-content" hidden>
 
-  <!-- ============================================================
-       HERO
-  ============================================================= -->
   <section id="hero">
     <div class="hero-inner">
-      <p class="eyebrow">05 Juli · usia baru</p>
+      <p class="eyebrow">06 Juli · harimu</p>
       <h1 class="hero-title">
         Selamat Ulang Tahun,<br><span class="hero-name">Fidela</span>
       </h1>
-      <button id="age-trigger" class="age-badge" aria-label="Sentuh untuk melihat usia">
+      <button id="age-trigger" class="age-badge" aria-label="Sentuh untuk kembang api ekstra">
         <span class="age-number">24</span>
       </button>
-      <p class="hero-sub">sentuh angkanya untuk kembang api ekstra ✨</p>
+      <p class="hero-sub">sentuh angkanya, ada kembang api lebih banyak ✨</p>
     </div>
     <div class="scroll-cue">
-      <span>gulir ke bawah</span>
+      <span>gulir untuk lanjut</span>
       <div class="scroll-line"></div>
     </div>
   </section>
 
-  <!-- ============================================================
-       STORIES / REELS ALA INSTAGRAM
-       Ganti isi array STORIES di script.js untuk menambah foto.
-  ============================================================= -->
   <section id="stories-section">
-    <p class="section-eyebrow">kilas balik</p>
-    <h2 class="section-title">Beberapa Momen</h2>
-    <div id="story-rail" class="story-rail"><!-- diisi otomatis oleh script.js --></div>
+    <div class="section-header reveal-fade">
+      <p class="section-eyebrow">sedikit kilas balik</p>
+      <h2 class="section-title">Momen-Momen Ini</h2>
+    </div>
+    <div class="story-rail-wrap">
+      <div id="story-rail" class="story-rail"></div>
+    </div>
+    <p class="story-scroll-hint reveal-fade">← geser, masih ada lagi →</p>
   </section>
 
   <div id="story-viewer" class="story-viewer" hidden>
     <div class="story-progress-track" id="story-progress-track"></div>
+    <span class="story-counter" id="story-counter"></span>
     <button class="story-close" id="story-close" aria-label="Tutup">✕</button>
     <div class="story-tap-zone story-tap-left" id="story-prev"></div>
     <div class="story-tap-zone story-tap-right" id="story-next"></div>
@@ -95,14 +87,13 @@
     <p class="story-caption" id="story-caption"></p>
   </div>
 
-  <!-- ============================================================
-       SURPRISE REVEAL
-       Terkunci sampai pengunjung menggulir sampai sini.
-  ============================================================= -->
   <section id="reveal-section">
     <div id="reveal-locked" class="reveal-locked">
       <div class="reveal-lock-icon">🔒</div>
-      <p class="reveal-lock-text">gulir sedikit lagi<br>untuk kejutan terakhir</p>
+      <p class="reveal-lock-text">sedikit lagi,<br>ada kejutan terakhir</p>
+      <div class="reveal-progress-bar">
+        <div class="reveal-progress-fill"></div>
+      </div>
     </div>
 
     <div id="reveal-content" class="reveal-content">
@@ -110,23 +101,21 @@
       <h2 class="reveal-title">Untuk Fidela,<br>di Usia 24</h2>
 
       <div class="reveal-message" id="reveal-message">
-        <!-- GANTI TEKS INI SESUAI KEINGINAN — lihat juga variabel
-             CONFIG.message di script.js untuk sumber teks yang sama -->
-        <p>Sampai di bagian ini berarti sudah membaca semua cerita di atas — terima kasih sudah mau menunggu sampai sini.</p>
+        <p>Sampai di bagian ini berarti sudah melewati semua cerita di atas — terima kasih sudah mau menunggu sampai sini.</p>
         <p>Di usia 24, semoga setiap langkah yang diambil membawa pada kebaikan: untuk diri sendiri, untuk orang-orang terdekat, dan untuk masa depan yang sedang dituju bersama-sama.</p>
-        <p>Semoga yang diusahakan dengan sungguh-sungguh dibalas setimpal, kesehatan selalu terjaga, dan hati tetap tenang walau banyak hal yang harus dihadapi.</p>
+        <p>Semoga yang diusahakan dengan sungguh-sungguh dibalas setimpal dengan hal yang lebih baik, kesehatan selalu terjaga, dan hati tetap tenang walau banyak hal yang harus dihadapi.</p>
         <p>Untuk semua rencana yang sedang disusun — semoga selalu ada jalan, ada kekuatan untuk menjalaninya, dan ada kebaikan yang tumbuh dari setiap usaha itu. Untuk kita, dan untuk masa depan yang ingin dibangun bersama.</p>
         <p class="reveal-signoff">Selamat ulang tahun, Fidela.<br>Semoga tahun ini jadi salah satu tahun terbaik. 🤍</p>
       </div>
 
       <button id="share-btn" class="share-btn">
-        <span>bagikan momen ini</span>
+        <span>bagikan dan simpan momen ini 🤍</span>
       </button>
     </div>
   </section>
 
   <footer class="site-footer">
-    <p>dibuat dengan sepenuh hati, 2026</p>
+    <p>dibuat dengan sepenuh hati · Rizal</p>
   </footer>
 
 </main>

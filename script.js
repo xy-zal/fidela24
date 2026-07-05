@@ -6,15 +6,31 @@ const CONFIG = {
   age: 24,
   musicSrc: "assets/audio/backsound.mp3",
 
-  // Tambah/ganti foto di sini. "caption" muncul di bawah foto saat
-  // dibuka sebagai story. Taruh file fotonya di assets/img/ dengan
-  // nama yang sama persis seperti di bawah.
+  // Tambah/ganti foto di sini sebanyak apapun — rail-nya otomatis bisa
+  // digulir (scroll horizontal), jadi tidak ada batas jumlah foto.
+  // Taruh file fotonya di assets/img/ dengan nama yang sama persis
+  // seperti di bawah.
   stories: [
-    { src: "assets/img/foto1.jpg", caption: "Ganti dengan momen favoritmu" },
-    { src: "assets/img/foto2.jpg", caption: "Ganti dengan momen favoritmu" },
-    { src: "assets/img/foto3.jpg", caption: "Ganti dengan momen favoritmu" },
-    { src: "assets/img/foto4.jpg", caption: "Ganti dengan momen favoritmu" },
-    { src: "assets/img/foto5.jpg", caption: "Ganti dengan momen favoritmu" },
+    { src: "assets/img/foto1.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto2.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto3.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto4.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto5.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto6.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto7.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto8.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto9.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto10.jpeg", caption: "Fidela💖" },
+{ src: "assets/img/foto11.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto12.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto13.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto14.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto15.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto16.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto17.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto18.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto19.jpeg", caption: "Fidela💖" },
+    { src: "assets/img/foto20.jpeg", caption: "Fidela💖" },
   ],
 };
 
@@ -67,8 +83,64 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
 })();
 
 /* ==============================================================
-   SCRATCH CARD / GIFT BOX
+   BINTANG KELAP-KELIP (lapisan paling belakang)
 ============================================================== */
+(function initStars() {
+  const canvas = $("#stars-canvas");
+  const ctx = canvas.getContext("2d");
+  let stars = [];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const count = Math.round((canvas.width * canvas.height) / 9000);
+    stars = Array.from({ length: count }, () => ({
+      x: rand(0, canvas.width),
+      y: rand(0, canvas.height * 0.85), // sedikit lebih padat di area atas
+      r: rand(0.5, 1.6),
+      phase: rand(0, Math.PI * 2),
+      speed: rand(0.4, 1.1),
+    }));
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  function tick(t) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const s of stars) {
+      const twinkle = 0.4 + 0.6 * Math.abs(Math.sin(t * 0.0006 * s.speed + s.phase));
+      ctx.globalAlpha = twinkle * 0.85;
+      ctx.fillStyle = "#f7f1e3";
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+
+/* ==============================================================
+   REVEAL-ON-SCROLL (generic fade-in for section headers, thumbnails)
+============================================================== */
+(function initScrollReveal() {
+  const revealObserverGeneric = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in-view");
+          revealObserverGeneric.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.2 }
+  );
+  document.querySelectorAll(".reveal-fade").forEach((el) => revealObserverGeneric.observe(el));
+
+  // Elemen yang ditambahkan belakangan (mis. thumbnail story) diamati terpisah
+  window.observeRevealFade = (el) => revealObserverGeneric.observe(el);
+})();
 (function initScratchCard() {
   const canvas = $("#scratch-canvas");
   const ctx = canvas.getContext("2d");
@@ -407,15 +479,79 @@ function renderStoryRail() {
   storyRail.innerHTML = "";
   CONFIG.stories.forEach((s, i) => {
     const btn = document.createElement("button");
-    btn.className = "story-thumb";
+    btn.className = "story-thumb reveal-fade";
+    btn.style.transitionDelay = `${Math.min(i * 60, 480)}ms`;
     btn.innerHTML = `
       <span class="story-ring"><img src="${s.src}" alt="Momen ${i + 1}" onerror="this.src='https://placehold.co/150x150/171340/f4d793?text=%2B+Foto'"></span>
       <span>Momen ${i + 1}</span>`;
     btn.addEventListener("click", () => openStory(i));
     storyRail.appendChild(btn);
+    if (window.observeRevealFade) window.observeRevealFade(btn);
   });
 }
 renderStoryRail();
+
+/* Rail lebih ramah untuk banyak foto: bisa di-drag pakai mouse di desktop,
+   scroll roda mouse otomatis jadi horizontal, dan fade di ujung kiri/kanan
+   otomatis hilang kalau sudah mentok supaya jelas tidak ada lagi konten. */
+(function initStoryRailScroll() {
+  const rail = storyRail;
+  const wrap = rail.closest(".story-rail-wrap");
+
+  function updateFadeEdges() {
+    const maxScroll = rail.scrollWidth - rail.clientWidth - 2;
+    wrap.style.setProperty("--fade-left", rail.scrollLeft > 8 ? "1" : "0");
+    wrap.classList.toggle("at-start", rail.scrollLeft <= 8);
+    wrap.classList.toggle("at-end", rail.scrollLeft >= maxScroll);
+  }
+  rail.addEventListener("scroll", updateFadeEdges, { passive: true });
+  window.addEventListener("resize", updateFadeEdges);
+  setTimeout(updateFadeEdges, 100);
+
+  // Roda mouse vertikal -> geser horizontal (umum di rail seperti ini)
+  rail.addEventListener(
+    "wheel",
+    (e) => {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        rail.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    },
+    { passive: false }
+  );
+
+  // Drag-to-scroll pakai mouse (desktop, karena scrollbar disembunyikan)
+  let isDown = false;
+  let startX = 0;
+  let startScroll = 0;
+  let moved = false;
+
+  rail.addEventListener("mousedown", (e) => {
+    isDown = true;
+    moved = false;
+    rail.classList.add("dragging");
+    startX = e.pageX;
+    startScroll = rail.scrollLeft;
+  });
+  window.addEventListener("mouseup", () => {
+    isDown = false;
+    rail.classList.remove("dragging");
+  });
+  window.addEventListener("mousemove", (e) => {
+    if (!isDown) return;
+    const dx = e.pageX - startX;
+    if (Math.abs(dx) > 5) moved = true;
+    rail.scrollLeft = startScroll - dx;
+  });
+  // Kalau habis drag (bukan sekadar klik), jangan buka story secara tidak sengaja
+  rail.addEventListener(
+    "click",
+    (e) => {
+      if (moved) { e.stopPropagation(); e.preventDefault(); }
+    },
+    true
+  );
+})();
 
 function buildProgressBars() {
   storyProgressTrack.innerHTML = "";
@@ -445,6 +581,7 @@ function showStory(index) {
   const s = CONFIG.stories[index];
   storyMedia.innerHTML = `<img src="${s.src}" alt="Momen ${index + 1}" onerror="this.src='https://placehold.co/900x1600/171340/f4d793?text=Taruh+foto+di+assets/img'">`;
   storyCaption.textContent = s.caption || "";
+  $("#story-counter").textContent = `${index + 1} / ${CONFIG.stories.length}`;
 
   requestAnimationFrame(() => {
     const fill = bars[index];
