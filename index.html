@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Selamat Ulang Tahun, Fidela 🎇</title>
+<meta name="description" content="Untuk Fidela, di usia 24.">
+<meta name="theme-color" content="#0a0d29">
+
+<!-- Open Graph: biar preview bagus kalau link dibagikan -->
+<meta property="og:title" content="Selamat Ulang Tahun, Fidela!">
+<meta property="og:description" content="Sebuah kado kecil untuk usia 24.">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     GIFT BOX / SCRATCH CARD OVERLAY
+     Ini yang pertama dilihat pengunjung. Setelah digosok, halaman
+     utama muncul dan musik mulai diputar (trigger interaksi pertama).
+============================================================= -->
+<div id="gift-overlay">
+  <div class="gift-stage">
+    <p class="gift-eyebrow">sebuah kado kecil, untuk</p>
+    <h1 class="gift-name">Fidela</h1>
+    <div class="scratch-wrap">
+      <canvas id="scratch-canvas" width="320" height="320"></canvas>
+      <div class="scratch-hint">
+        <span class="scratch-icon">🎁</span>
+        <span>gosok kotaknya</span>
+      </div>
+    </div>
+    <p class="gift-progress-label">disegel rapat...</p>
+  </div>
+</div>
+
+<!-- Tombol mute, selalu terlihat -->
+<button id="mute-btn" class="floating-btn" aria-label="Mute atau unmute musik">
+  <span id="mute-icon">🔊</span>
+</button>
+<audio id="bgm" loop preload="auto">
+  <source src="assets/audio/backsound.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Canvas kembang api global, menutupi seluruh viewport, di belakang konten -->
+<canvas id="fireworks-canvas"></canvas>
+
+<!-- Canvas confetti, di atas segalanya saat aktif -->
+<canvas id="confetti-canvas"></canvas>
+
+<main id="main-content" hidden>
+
+  <!-- ============================================================
+       HERO
+  ============================================================= -->
+  <section id="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">05 Juli · usia baru</p>
+      <h1 class="hero-title">
+        Selamat Ulang Tahun,<br><span class="hero-name">Fidela</span>
+      </h1>
+      <button id="age-trigger" class="age-badge" aria-label="Sentuh untuk melihat usia">
+        <span class="age-number">24</span>
+      </button>
+      <p class="hero-sub">sentuh angkanya untuk kembang api ekstra ✨</p>
+    </div>
+    <div class="scroll-cue">
+      <span>gulir ke bawah</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       STORIES / REELS ALA INSTAGRAM
+       Ganti isi array STORIES di script.js untuk menambah foto.
+  ============================================================= -->
+  <section id="stories-section">
+    <p class="section-eyebrow">kilas balik</p>
+    <h2 class="section-title">Beberapa Momen</h2>
+    <div id="story-rail" class="story-rail"><!-- diisi otomatis oleh script.js --></div>
+  </section>
+
+  <div id="story-viewer" class="story-viewer" hidden>
+    <div class="story-progress-track" id="story-progress-track"></div>
+    <button class="story-close" id="story-close" aria-label="Tutup">✕</button>
+    <div class="story-tap-zone story-tap-left" id="story-prev"></div>
+    <div class="story-tap-zone story-tap-right" id="story-next"></div>
+    <div class="story-media" id="story-media"></div>
+    <p class="story-caption" id="story-caption"></p>
+  </div>
+
+  <!-- ============================================================
+       SURPRISE REVEAL
+       Terkunci sampai pengunjung menggulir sampai sini.
+  ============================================================= -->
+  <section id="reveal-section">
+    <div id="reveal-locked" class="reveal-locked">
+      <div class="reveal-lock-icon">🔒</div>
+      <p class="reveal-lock-text">gulir sedikit lagi<br>untuk kejutan terakhir</p>
+    </div>
+
+    <div id="reveal-content" class="reveal-content">
+      <p class="section-eyebrow">untuk penutup</p>
+      <h2 class="reveal-title">Untuk Fidela,<br>di Usia 24</h2>
+
+      <div class="reveal-message" id="reveal-message">
+        <!-- GANTI TEKS INI SESUAI KEINGINAN — lihat juga variabel
+             CONFIG.message di script.js untuk sumber teks yang sama -->
+        <p>Sampai di bagian ini berarti sudah membaca semua cerita di atas — terima kasih sudah mau menunggu sampai sini.</p>
+        <p>Di usia 24, semoga setiap langkah yang diambil membawa pada kebaikan: untuk diri sendiri, untuk orang-orang terdekat, dan untuk masa depan yang sedang dituju bersama-sama.</p>
+        <p>Semoga yang diusahakan dengan sungguh-sungguh dibalas setimpal, kesehatan selalu terjaga, dan hati tetap tenang walau banyak hal yang harus dihadapi.</p>
+        <p>Untuk semua rencana yang sedang disusun — semoga selalu ada jalan, ada kekuatan untuk menjalaninya, dan ada kebaikan yang tumbuh dari setiap usaha itu. Untuk kita, dan untuk masa depan yang ingin dibangun bersama.</p>
+        <p class="reveal-signoff">Selamat ulang tahun, Fidela.<br>Semoga tahun ini jadi salah satu tahun terbaik. 🤍</p>
+      </div>
+
+      <button id="share-btn" class="share-btn">
+        <span>bagikan momen ini</span>
+      </button>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>dibuat dengan sepenuh hati, 2026</p>
+  </footer>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
