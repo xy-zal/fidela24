@@ -239,6 +239,16 @@ const bgm = $("#bgm");
 const muteBtn = $("#mute-btn");
 const muteIcon = $("#mute-icon");
 
+// --- KODE TAMBAHAN UNTUK FIX AUDIO DI SAFARI IPHONE ---
+document.addEventListener('touchstart', function unlockAudio() {
+    const bgm = document.getElementById('bgm');
+    if (bgm && bgm.paused) {
+        bgm.play().catch(e => console.log("Mencoba memutar audio..."));
+        document.removeEventListener('touchstart', unlockAudio);
+    }
+}, { passive: true });
+// -----------------------------------------------------
+
 function applyMuteState(muted) {
   bgm.muted = muted;
   muteIcon.textContent = muted ? "🔇" : "🔊";
